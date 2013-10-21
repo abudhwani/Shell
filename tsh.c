@@ -180,6 +180,36 @@ int main(int argc, char **argv)
 */
 void eval(char *cmdline) 
 {
+    char* argv[MAXARGS];
+    int argc = 0;
+    int bg = parseline(cmdline, argv);
+    pid_t mypid
+    
+    
+    if(argv[0] == NULL) return; /* ignore empty lines */
+    
+    if(builtin_cmd(argv)) return; /* check for builtin command*/
+    
+    if((mypid = fork()) == 0){
+    	if(execve(argv[0], argv, environ) < 0){
+    		printf("%s: Command not found.\n", argv[0])
+    		return;
+    	}
+    }else{
+    	if(bg == 1){
+    		addjob(jobs, pid, BG, cmdline);
+    		printf("[%d] (%d) %s", pid2jid(pid), pid, cmdline);
+    		
+    	}else{
+    		addjob(jobs, pid, FG, cmdline);
+    		waitfg(pid);
+    	}
+    }
+    
+    
+    
+    
+    
     return;
 }
 
@@ -246,7 +276,23 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv) 
 {
+    if(strcmp(argv[0],"quit")==0)
+    	exit(0);
+
+    if((strcmp(argv[0],"bg")==0) || (strcmp(argv[0],"fg")==0)){
+    	do_bgfg(argv);
+    	return 1;
+    }
+
+    if(strcmp(argv[0],"jobs")==0){
+    	listjobs(jobs);
+    	return 1
+    }
+    
+    
     return 0;     /* not a builtin command */
+    
+    
 }
 
 /* 
