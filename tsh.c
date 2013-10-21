@@ -300,6 +300,48 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {
+    struct job_t *myjob;
+    int myjid;
+    pid_t mypid;
+    char* myid = argv[1];
+    
+    if(myid == NULL){
+    	printf("%s command requires PID or %%jobid argument\n", argv[0]);
+        return;
+    }
+    
+    if(myid[0] == %){
+    	jid = atoi(&id[1]);
+    	myjob = getjobjid(jobs, myjid);
+    	if(myjob == NULL){
+    		printf("%d: No such job", myjid);
+    		return;
+    	}
+    	
+    }else{
+    	mypid = atoi(myid);
+    	myjob = getjobpid(jobs, mypid);
+    	if(myjob == NULL){
+    		printf("%d: No such job", mypid);
+    		return;
+    	}
+    	
+    }
+    
+    if(strcmp("fg", argv[0]) == 0) {
+        myjob->state = FG;
+        waitfg(myjob->pid);
+    } 
+    else if(strcmp("bg", argv[0]) == 0) {
+        printf("[%d] (%d) %s", myjob->jid, myjob->pid, myjob->cmdline);
+        myjob->state = BG;
+    } 
+    else {
+        printf("bg/fg error: %s\n", argv[0]);
+    }
+    
+    
+    
     return;
 }
 
